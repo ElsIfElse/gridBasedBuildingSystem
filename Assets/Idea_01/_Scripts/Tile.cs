@@ -58,6 +58,6 @@ public class Tile : MonoBehaviour
         Destroy(_builtBuildingGameobjectOnTile);
         _builtBuildingGameobjectOnTile = null;
     }
-
+    public Item ItemOnTile => _itemOnTile;
 
 }

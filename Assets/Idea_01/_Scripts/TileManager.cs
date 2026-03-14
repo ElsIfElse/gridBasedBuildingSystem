@@ -30,10 +30,12 @@ public class TileManager : MonoBehaviour
     public Tile CachedHoveredTile;
     public HighlightHandler HighlightHandler;
     public InputAction BuildClickAction;
+    TileInspectHandler TileInspectHandler;
 
     void Start()
     {
         InitializeActions();
+        TileInspectHandler = new(this);
         HighlightHandler = new();
     }
 
@@ -46,6 +48,7 @@ public class TileManager : MonoBehaviour
 
     void Update()
     {
+
         HandleHighlights();
         HandleTileClick();
     }
@@ -137,6 +140,9 @@ public class TileManager : MonoBehaviour
         string info = $"[Name = {itemOnTile.ItemName}] | [Price = {itemOnTile.ItemPrice}]";
         if(itemOnTile is IElectrical) info += $" | [Usage = {(itemOnTile as IElectrical).ElectricityUsage}W]";
         if(itemOnTile is ISpeedBased) info += $" | [Speed = {(itemOnTile as ISpeedBased).Speed}]";
+
+        TileInspectHandler.SetSelectedTile(CachedHoveredTile);
+
         Debug.Log(info);
     }
     void HandlePlaceItemClick()
