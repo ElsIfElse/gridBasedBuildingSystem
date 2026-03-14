@@ -15,8 +15,6 @@ public class ItemFactory : MonoBehaviour
 
     public List<Item_SO> ItemDataList = new();
     public List<GameObject> PreviewObjects = new();
-
-    public GameObject CurrentlyActivePreviewObj;
     public Material TransparentMaterial; 
 
     public Dictionary<Item, GameObject> ItemWithPreviewList = new();
@@ -47,8 +45,34 @@ public class ItemFactory : MonoBehaviour
     {
         if(RotateObjectAction.WasPressedThisFrame())
         {
-            if(BuildingChooser.Instance.CurrentlyActivePreviewObj != null) BuildingChooser.Instance.CurrentlyActivePreviewObj.transform.Rotate(0, 90, 0);
+            if(ItemChooser.Instance.CurrentlyActivePreviewObj != null)
+            {
+                ItemChooser.Instance.CurrentlyActivePreviewObj.transform.Rotate(0, 90, 0);
+                HandleSizeChangeWhileRotating();
+                TileManager.Instance.RefreshHighlight();
+            }
         }
+    }
+
+    void HandleSizeChangeWhileRotating()
+    {
+        Item item = ItemChooser.Instance.SelectedItem;
+        int angle = Mathf.RoundToInt(ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation.eulerAngles.y) % 360;
+
+        switch(angle)
+        {
+            case 0: case 180:
+                item.CurrentItemSize_X = item.OriginalItemSize_X;
+                item.CurrentItemSize_Y = item.OriginalItemSize_Y;
+                break;
+            case 90: case 270:
+                item.CurrentItemSize_X = item.OriginalItemSize_Y;
+                item.CurrentItemSize_Y = item.OriginalItemSize_X;
+                break;
+        }
+
+        item.CurrentRotation = angle;
+        Debug.Log($"Size of selected item changed: {item.CurrentItemSize_X}x{item.CurrentItemSize_Y}");
     }
 
     GameObject CreateBuildingPreviewObject(Item building)
@@ -75,7 +99,7 @@ public class ItemFactory : MonoBehaviour
 
     public void PlaceBuildingOnTile(Tile mainTile,List<Tile> affectedTiles)
     {
-        Item building = BuildingChooser.Instance.SelectedBuilding;
+        Item building = ItemChooser.Instance.SelectedItem;
         if(MoneyHandler.Instance.IsAffordable(building) == false) return;
         if(building == null)
         {
@@ -89,11 +113,11 @@ public class ItemFactory : MonoBehaviour
         }
         
         GameObject buildingObj = Instantiate(building.ItemPrefab);
-        building.SetBuiltBuildingGameobject(buildingObj);
+        mainTile.AddBuildingToTile(building,buildingObj);
         
-        foreach(Tile tile in affectedTiles) tile.AddBuildingToTile(building);
+        foreach(Tile tile in affectedTiles) tile.AddBuildingToTile(building,buildingObj);
 
-        building.BuiltItemGameobject.transform.SetPositionAndRotation(mainTile.transform.position, BuildingChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);
+        mainTile.BuiltItemGameobjectOnTile.transform.SetPositionAndRotation(mainTile.transform.position, ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);
     }
 
     public void SetMaterialTransparent(Material mat)

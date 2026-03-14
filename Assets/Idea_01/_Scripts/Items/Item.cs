@@ -7,19 +7,26 @@ public abstract class Item
     public string ItemName;  
     public int ItemPrice;
 
-    public int ItemSize_X;
-    public int ItemSize_Y;
+    public int OriginalItemSize_X;
+    public int OriginalItemSize_Y;
+
+    public int CurrentItemSize_X;
+    public int CurrentItemSize_Y;
 
     public GameObject ItemPrefab;
-    public GameObject BuiltItemGameobject;
+    public int CurrentRotation;
 
     public virtual void InitializeFrom_Object(Item objectData)
     {
         ItemName = objectData.ItemName;
         ItemPrice = objectData.ItemPrice;
 
-        ItemSize_X = objectData.ItemSize_X;
-        ItemSize_Y = objectData.ItemSize_Y;
+        OriginalItemSize_X = objectData.OriginalItemSize_X;
+        OriginalItemSize_Y = objectData.OriginalItemSize_Y;
+        
+        CurrentItemSize_X = objectData.CurrentItemSize_X;
+        CurrentItemSize_Y = objectData.CurrentItemSize_Y;
+
         ItemPrefab = objectData.ItemPrefab;
     }
 
@@ -28,10 +35,12 @@ public abstract class Item
         ItemName = soData.ItemName;
         ItemPrice = soData.ItemPrice;
 
-        ItemSize_X = soData.ItemSize_X;
-        ItemSize_Y = soData.ItemSize_Y;
+        OriginalItemSize_X = soData.ItemSize_X;
+        OriginalItemSize_Y = soData.ItemSize_Y;
+
+        CurrentItemSize_X = soData.ItemSize_X;
+        CurrentItemSize_Y = soData.ItemSize_Y;
+
         ItemPrefab = soData.ItemPrefab;
     }
-
-    public void SetBuiltBuildingGameobject(GameObject obj) => BuiltItemGameobject = obj;
 }

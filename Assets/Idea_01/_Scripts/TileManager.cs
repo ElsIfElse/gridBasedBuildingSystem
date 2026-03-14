@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -76,13 +77,16 @@ public class TileManager : MonoBehaviour
                     List<Tile> tilesToBeHighlighted = new();
 
                     // If we selected an item to build, check the size of it and the effected tiles and add them to the to be highlighted list
-                    if(BuildingChooser.Instance.SelectedBuilding != null)
+                    if(ItemChooser.Instance.SelectedItem != null)
                     {
-                        List<Tile> neighbourTiles = GetNeighbourTilesInRange(
-                            CachedHoveredTile, BuildingChooser.Instance.SelectedBuilding.ItemSize_X - 1, 
-                            BuildingChooser.Instance.SelectedBuilding.ItemSize_Y - 1);
+                        // List<Tile> neighbourTiles = GetNeighbourTilesInRange(
+                        //     CachedHoveredTile, BuildingChooser.Instance.SelectedBuilding.ItemSize_X - 1, 
+                        //     BuildingChooser.Instance.SelectedBuilding.ItemSize_Y - 1);
 
-                        tilesToBeHighlighted.AddRange(neighbourTiles);
+                        List<Tile> effectedTiles = GetEffectedTilesBasedOnItemSize(CachedHoveredTile, ItemChooser.Instance.SelectedItem);
+                        Debug.Log($"Length of effected tiles: {effectedTiles.Count}");
+
+                        tilesToBeHighlighted.AddRange(effectedTiles);
                     }
                     // Else just add the hovered tile
                     else tilesToBeHighlighted.Add(CachedHoveredTile);
@@ -92,17 +96,16 @@ public class TileManager : MonoBehaviour
                     HighlightHandler.HighlightTiles(tilesToBeHighlighted,isValid);
                     
                     // Set the preview object position to the highlighted tile
-                    if(BuildingChooser.Instance.CurrentlyActivePreviewObj != null)
+                    if(ItemChooser.Instance.CurrentlyActivePreviewObj != null)
                     {
-                        BuildingChooser.Instance.SetCurrentPreviewObjectVisible();
-                        BuildingChooser.Instance.CurrentlyActivePreviewObj.transform.position = CachedHoveredTile.transform.position;
+                        ItemChooser.Instance.MakeCurrentPreviewObjectVisible();
+                        ItemChooser.Instance.CurrentlyActivePreviewObj.transform.position = CachedHoveredTile.transform.position;
                     }
-                    
                 }
                 else
                 {
                     HighlightHandler.DehighlightAllTiles();
-                    BuildingChooser.Instance.SetCurrentPreviewObjectInvisible();
+                    ItemChooser.Instance.MakeCurrentPreviewObjectInvisible();
                 }
             }
         }
@@ -123,13 +126,13 @@ public class TileManager : MonoBehaviour
         
         if(BuildClickAction.WasPressedThisFrame())
         {
-            if(BuildingChooser.Instance.SelectedBuilding == null && !CachedHoveredTile.IsTileEmpty)
+            if(ItemChooser.Instance.SelectedItem == null && !CachedHoveredTile.IsTileEmpty)
             {
                 HandleInspectItemClick();
             }
-            else if(CachedHoveredTile.IsTileEmpty && BuildingChooser.Instance.SelectedBuilding != null)
+            else if(CachedHoveredTile.IsTileEmpty && ItemChooser.Instance.SelectedItem != null)
             {
-                HandlePlaceItemClick();
+                HandlePlaceItemClick(CachedHoveredTile);
             }
         }
     }
@@ -145,11 +148,11 @@ public class TileManager : MonoBehaviour
 
         Debug.Log(info);
     }
-    void HandlePlaceItemClick()
+    void HandlePlaceItemClick(Tile mainTile)
     {
-        Item selectedBuilding = BuildingChooser.Instance.SelectedBuilding;
+        Item selectedBuilding = ItemChooser.Instance.SelectedItem;
         if(selectedBuilding == null) { Debug.Log("No building selected"); return; }
-        List<Tile> neighbourTiles = GetNeighbourTilesInRange(CachedHoveredTile, selectedBuilding.ItemSize_X - 1, selectedBuilding.ItemSize_Y - 1);
+        List<Tile> neighbourTiles = GetEffectedTilesBasedOnItemSize(mainTile,selectedBuilding);
         foreach(Tile tile in neighbourTiles) if(!tile.IsTileEmpty) { Debug.Log("Tile is not empty"); return; }
         ItemFactory.Instance.PlaceBuildingOnTile(CachedHoveredTile, neighbourTiles);
     }
@@ -205,5 +208,34 @@ public class TileManager : MonoBehaviour
             }
         }
         return neighbourTiles;
+    }
+
+    public List<Tile> GetEffectedTilesBasedOnItemSize(Tile tile, Item item)
+    {
+        List<Tile> effectedTiles = new();
+
+        int dirX = (item.CurrentRotation == 180 || item.CurrentRotation == 270) ? -1 : 1;
+        int dirY = (item.CurrentRotation == 180 || item.CurrentRotation == 90)  ? -1 : 1;
+
+        for(int i = 0; i < item.CurrentItemSize_X; i++)
+        {
+            for(int j = 0; j < item.CurrentItemSize_Y; j++)
+            {
+                Tile neighbourTile = GetTileByCoordinates(
+                    new Vector2(tile.Coordinates.x + i * dirX, tile.Coordinates.y + j * dirY));
+                if(neighbourTile != null) effectedTiles.Add(neighbourTile);
+            }
+        }
+
+        return effectedTiles;
+    }
+
+    public void RefreshHighlight()
+    {
+        if(CachedHoveredTile == null) return;
+        HighlightHandler.DehighlightAllTiles();
+        List<Tile> affectedTiles = GetEffectedTilesBasedOnItemSize(CachedHoveredTile, ItemChooser.Instance.SelectedItem);
+        bool isValid = IsAreaValid(affectedTiles);
+        HighlightHandler.HighlightTiles(affectedTiles, isValid);
     }
 }

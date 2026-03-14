@@ -8,7 +8,7 @@ public class ItemChooserButton : Button
 
     public void SetupButtonClick(Item itemToBuild)
     {
-        onClick.AddListener(()=> BuildingChooser.Instance.OnChoosingBuilding(itemToBuild));
+        onClick.AddListener(()=> ItemChooser.Instance.OnChoosingBuilding(itemToBuild));
         _itemToBuild = itemToBuild;
     }
 }

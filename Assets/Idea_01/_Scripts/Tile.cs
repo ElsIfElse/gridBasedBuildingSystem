@@ -14,10 +14,10 @@ public class Tile : MonoBehaviour
     Material BaseMaterial;
     MeshRenderer Renderer;
 
-    public bool IsTileEmpty => _builtBuildingGameobjectOnTile == null;
+    public bool IsTileEmpty => BuiltItemGameobjectOnTile == null;
 
     public Item _itemOnTile;
-    public GameObject _builtBuildingGameobjectOnTile;
+    public GameObject BuiltItemGameobjectOnTile;
 
     void Start()
     {
@@ -47,16 +47,16 @@ public class Tile : MonoBehaviour
         if(IsTileEmpty) return null;
         else return _itemOnTile;
     }
-    public void AddBuildingToTile(Item building)
+    public void AddBuildingToTile(Item building,GameObject buildingObj)
     {
         _itemOnTile = building;
-        _builtBuildingGameobjectOnTile = _itemOnTile.BuiltItemGameobject;
+        BuiltItemGameobjectOnTile = buildingObj;
     }
     public void RemoveBuildingFromTile()
     {
         _itemOnTile = null;
-        Destroy(_builtBuildingGameobjectOnTile);
-        _builtBuildingGameobjectOnTile = null;
+        Destroy(BuiltItemGameobjectOnTile);
+        BuiltItemGameobjectOnTile = null;
     }
     public Item ItemOnTile => _itemOnTile;
 

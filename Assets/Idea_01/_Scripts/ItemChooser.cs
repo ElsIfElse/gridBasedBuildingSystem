@@ -2,17 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class BuildingChooser : MonoBehaviour
+public class ItemChooser : MonoBehaviour
 {
     #region Singleton
-    public static BuildingChooser Instance;
+    public static ItemChooser Instance;
     private void Awake() 
     {
         if(Instance == null) Instance = this;
         else Destroy(gameObject);
     }
     #endregion
-    public Item SelectedBuilding;
+    public Item SelectedItem;
     public GameObject CurrentlyActivePreviewObj;
 
     InputAction DeselectSelectionsAction;
@@ -25,16 +25,22 @@ public class BuildingChooser : MonoBehaviour
 
     void Update()
     {
-        if(DeselectSelectionsAction.WasPressedThisFrame() && SelectedBuilding != null) DeselectItemSelection();
+        if(DeselectSelectionsAction.WasPressedThisFrame() && SelectedItem != null) DeselectItemSelection();
     }
 
     public void OnChoosingBuilding(Item building)
     {
         // Cache the currently hovered Tile and if it is null then return
         Tile currentlyHoveredTile = TileManager.Instance.CachedHoveredTile;
+        // Debug.Log($"Currently hovered tile: {currentlyHoveredTile.Coordinates}");
+
         DisableAllPreviewObjects();
-        SelectedBuilding = building;
-        GameObject previewObj = ItemFactory.Instance.ItemWithPreviewList[SelectedBuilding];
+        SelectedItem = building;
+        Debug.Log($"Selected item: {SelectedItem.ItemName}");
+
+        GameObject previewObj = ItemFactory.Instance.ItemWithPreviewList[SelectedItem];
+        Debug.Log($"Preview object: {previewObj.name}");
+
         CurrentlyActivePreviewObj = previewObj;
 
         if(currentlyHoveredTile == null)
@@ -50,7 +56,7 @@ public class BuildingChooser : MonoBehaviour
 
     public void DeselectItemSelection()
     {
-        SelectedBuilding = null;
+        SelectedItem = null;
         CurrentlyActivePreviewObj = null;
         DisableAllPreviewObjects();
     }
@@ -64,11 +70,11 @@ public class BuildingChooser : MonoBehaviour
         }
     }
 
-    public void SetCurrentPreviewObjectVisible()
+    public void MakeCurrentPreviewObjectVisible()
     {
         if(CurrentlyActivePreviewObj != null) CurrentlyActivePreviewObj.SetActive(true);
     }
-    public void SetCurrentPreviewObjectInvisible()
+    public void MakeCurrentPreviewObjectInvisible()
     {
         if(CurrentlyActivePreviewObj != null) CurrentlyActivePreviewObj.SetActive(false);
     }
