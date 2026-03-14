@@ -5,9 +5,9 @@ public class CustomerController : MonoBehaviour
 {
     CustomerStateMachineData CustomerStateMachineData;
         
-    GameObject CustomerObj;
-    NavMeshAgent CustomerAgent;
-    CustomerStateMachine CustomerStateMachine;
+    public GameObject CustomerObj;
+    public NavMeshAgent CustomerAgent;
+    public CustomerStateMachine CustomerStateMachine;
 
     void OnEnable()
     {
