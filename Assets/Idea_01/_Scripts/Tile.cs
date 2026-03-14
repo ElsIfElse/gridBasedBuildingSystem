@@ -17,6 +17,11 @@ public class Tile : MonoBehaviour
     // public bool IsTileEmpty => BuiltItemGameobjectOnTile == null;
     public bool IsTileEmpty(Item itemToBuild = default)
     {
+        if(itemToBuild == default)
+        {
+            return BuiltItemGameobjectOnTile == null && BuiltWallGameobjectOnTile == null;
+        }
+
         if(itemToBuild is Wall)
         {
             if(BuiltWallGameobjectOnTile == null) return true;
@@ -80,11 +85,17 @@ public class Tile : MonoBehaviour
             BuiltItemGameobjectOnTile = itemObj;
         }
     }
-    public void RemoveBuildingFromTile()
+    public void RemoveItemFromTile()
     {
         _itemOnTile = null;
         Destroy(BuiltItemGameobjectOnTile);
         BuiltItemGameobjectOnTile = null;
+    }
+    public void RemoveWallFromTile()
+    {
+        _wallOnTile = null;
+        Destroy(BuiltWallGameobjectOnTile);
+        BuiltWallGameobjectOnTile = null;
     }
     public Item ItemOnTile => _itemOnTile;
     public Wall WallOnTile => _wallOnTile;

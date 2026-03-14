@@ -142,9 +142,14 @@ public class TileManager : MonoBehaviour
     void HandleInspectItemClick()
     {
         Item itemOnTile = CachedHoveredTile.CurrentItemOnTile();
-        string info = $"[Name = {itemOnTile.ItemName}] | [Price = {itemOnTile.ItemPrice}]";
-        if(itemOnTile is IElectrical) info += $" | [Usage = {(itemOnTile as IElectrical).ElectricityUsage}W]";
-        if(itemOnTile is ISpeedBased) info += $" | [Speed = {(itemOnTile as ISpeedBased).Speed}]";
+        string info ="";
+        
+        if(itemOnTile != null)
+        {
+            info += $"[Name = {itemOnTile.ItemName}] | [Price = {itemOnTile.ItemPrice}]";
+            if(itemOnTile is IElectrical) info += $" | [Usage = {(itemOnTile as IElectrical).ElectricityUsage}W]";
+            if(itemOnTile is ISpeedBased) info += $" | [Speed = {(itemOnTile as ISpeedBased).Speed}]";
+        }
 
         TileInspectHandler.SetSelectedTile(CachedHoveredTile);
 

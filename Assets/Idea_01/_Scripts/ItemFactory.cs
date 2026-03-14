@@ -53,7 +53,6 @@ public class ItemFactory : MonoBehaviour
             }
         }
     }
-
     void HandleSizeChangeWhileRotating()
     {
         Item item = ItemChooser.Instance.SelectedItem;
