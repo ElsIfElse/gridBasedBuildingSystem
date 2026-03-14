@@ -34,4 +34,30 @@ public class ItemTracker : MonoBehaviour
                 break;
         }
     }
+
+    Item GetClosestItemType(Item item, Vector3 position)
+    {
+        switch(item)
+        {
+            case Chair:
+                float lowestDistance = float.MaxValue;
+                foreach(Chair chair in Chairs)
+                {
+                    float distance = Vector3.Distance(chair.ChairObj.transform.position, position);
+                    if(distance < lowestDistance)
+                    {
+                        lowestDistance = distance;
+                        return chair;
+                    }
+                }
+                break;
+        }
+
+        return null;
+    }
+
+    public Chair GetClosestChair(Vector3 position)
+    {
+        return GetClosestItemType(new Chair(), position) as Chair;
+    }
 }
