@@ -87,6 +87,7 @@ public class Tile : MonoBehaviour
     }
     public void RemoveItemFromTile()
     {
+        ItemTracker.Instance.RemoveItem(_itemOnTile);
         _itemOnTile = null;
         Destroy(BuiltItemGameobjectOnTile);
         BuiltItemGameobjectOnTile = null;

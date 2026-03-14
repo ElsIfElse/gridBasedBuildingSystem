@@ -118,6 +118,7 @@ public class ItemFactory : MonoBehaviour
 
         if(item is Wall) mainTile.BuiltWallGameobjectOnTile.transform.SetPositionAndRotation(mainTile.transform.position, ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);
         else mainTile.BuiltItemGameobjectOnTile.transform.SetPositionAndRotation(mainTile.transform.position, ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);
+        ItemTracker.Instance.AddItem(item);
     }
 
     public void SetMaterialTransparent(Material mat)
