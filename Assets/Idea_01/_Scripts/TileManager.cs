@@ -92,7 +92,7 @@ public class TileManager : MonoBehaviour
                     else tilesToBeHighlighted.Add(CachedHoveredTile);
 
                     // Check if the area is valid for building deciding the color of the highlight
-                    bool isValid = IsAreaValid(tilesToBeHighlighted);
+                    bool isValid = IsAreaValid(tilesToBeHighlighted,ItemChooser.Instance.SelectedItem);
                     HighlightHandler.HighlightTiles(tilesToBeHighlighted,isValid);
                     
                     // Set the preview object position to the highlighted tile
@@ -111,11 +111,11 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    bool IsAreaValid(List<Tile> tilesToCheck)
+    bool IsAreaValid(List<Tile> tilesToCheck, Item itemToBuild)
     {
         foreach(Tile tile in tilesToCheck)
         {
-            if(!tile.IsTileEmpty) return false;
+            if(!tile.IsTileEmpty(itemToBuild)) return false;
         }
         return true;
     }
@@ -123,14 +123,16 @@ public class TileManager : MonoBehaviour
     void HandleTileClick()
     {
         if(CachedHoveredTile == null) return;
-        
+        Item selectedItem = ItemChooser.Instance.SelectedItem;
+
+
         if(BuildClickAction.WasPressedThisFrame())
         {
-            if(ItemChooser.Instance.SelectedItem == null && !CachedHoveredTile.IsTileEmpty)
+            if(ItemChooser.Instance.SelectedItem == null && (!CachedHoveredTile.IsTileEmpty()))
             {
                 HandleInspectItemClick();
             }
-            else if(CachedHoveredTile.IsTileEmpty && ItemChooser.Instance.SelectedItem != null)
+            else if(selectedItem != null && CachedHoveredTile.IsTileEmpty(selectedItem))
             {
                 HandlePlaceItemClick(CachedHoveredTile);
             }
@@ -139,7 +141,7 @@ public class TileManager : MonoBehaviour
 
     void HandleInspectItemClick()
     {
-        Item itemOnTile = CachedHoveredTile.CurrentBuildingOnTile();
+        Item itemOnTile = CachedHoveredTile.CurrentItemOnTile();
         string info = $"[Name = {itemOnTile.ItemName}] | [Price = {itemOnTile.ItemPrice}]";
         if(itemOnTile is IElectrical) info += $" | [Usage = {(itemOnTile as IElectrical).ElectricityUsage}W]";
         if(itemOnTile is ISpeedBased) info += $" | [Speed = {(itemOnTile as ISpeedBased).Speed}]";
@@ -153,7 +155,7 @@ public class TileManager : MonoBehaviour
         Item selectedBuilding = ItemChooser.Instance.SelectedItem;
         if(selectedBuilding == null) { Debug.Log("No building selected"); return; }
         List<Tile> neighbourTiles = GetEffectedTilesBasedOnItemSize(mainTile,selectedBuilding);
-        foreach(Tile tile in neighbourTiles) if(!tile.IsTileEmpty) { Debug.Log("Tile is not empty"); return; }
+        foreach(Tile tile in neighbourTiles) if(!tile.IsTileEmpty(selectedBuilding)) { Debug.Log("Tile is not empty"); return; }
         ItemFactory.Instance.PlaceBuildingOnTile(CachedHoveredTile, neighbourTiles);
     }
     Tile GetHoveredTile()
@@ -235,7 +237,7 @@ public class TileManager : MonoBehaviour
         if(CachedHoveredTile == null) return;
         HighlightHandler.DehighlightAllTiles();
         List<Tile> affectedTiles = GetEffectedTilesBasedOnItemSize(CachedHoveredTile, ItemChooser.Instance.SelectedItem);
-        bool isValid = IsAreaValid(affectedTiles);
+        bool isValid = IsAreaValid(affectedTiles, ItemChooser.Instance.SelectedItem);
         HighlightHandler.HighlightTiles(affectedTiles, isValid);
     }
 }

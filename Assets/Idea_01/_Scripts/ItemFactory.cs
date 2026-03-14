@@ -99,25 +99,26 @@ public class ItemFactory : MonoBehaviour
 
     public void PlaceBuildingOnTile(Tile mainTile,List<Tile> affectedTiles)
     {
-        Item building = ItemChooser.Instance.SelectedItem;
-        if(MoneyHandler.Instance.IsAffordable(building) == false) return;
-        if(building == null)
+        Item item = ItemChooser.Instance.SelectedItem;
+        if(MoneyHandler.Instance.IsAffordable(item) == false) return;
+        if(item == null)
         {
             Debug.LogError("No building selected");
             return;
         }
-        if(building.ItemPrefab == null)
+        if(item.ItemPrefab == null)
         {
             Debug.LogError("No prefab was found on selected building");
             return;
         }
         
-        GameObject buildingObj = Instantiate(building.ItemPrefab);
-        mainTile.AddBuildingToTile(building,buildingObj);
+        GameObject buildingObj = Instantiate(item.ItemPrefab);
+        mainTile.AddItemToTile(item,buildingObj);
         
-        foreach(Tile tile in affectedTiles) tile.AddBuildingToTile(building,buildingObj);
+        foreach(Tile tile in affectedTiles) tile.AddItemToTile(item,buildingObj);
 
-        mainTile.BuiltItemGameobjectOnTile.transform.SetPositionAndRotation(mainTile.transform.position, ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);
+        if(item is Wall) mainTile.BuiltWallGameobjectOnTile.transform.SetPositionAndRotation(mainTile.transform.position, ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);
+        else mainTile.BuiltItemGameobjectOnTile.transform.SetPositionAndRotation(mainTile.transform.position, ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);
     }
 
     public void SetMaterialTransparent(Material mat)

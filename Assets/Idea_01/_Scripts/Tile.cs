@@ -14,10 +14,25 @@ public class Tile : MonoBehaviour
     Material BaseMaterial;
     MeshRenderer Renderer;
 
-    public bool IsTileEmpty => BuiltItemGameobjectOnTile == null;
+    // public bool IsTileEmpty => BuiltItemGameobjectOnTile == null;
+    public bool IsTileEmpty(Item itemToBuild = default)
+    {
+        if(itemToBuild is Wall)
+        {
+            if(BuiltWallGameobjectOnTile == null) return true;
+            else return false;
+        }
+        else
+        {
+            if(BuiltItemGameobjectOnTile == null) return true;
+            else return false;
+        }
+    }
 
     public Item _itemOnTile;
     public GameObject BuiltItemGameobjectOnTile;
+    public Wall _wallOnTile;
+    public GameObject BuiltWallGameobjectOnTile;
 
     void Start()
     {
@@ -42,15 +57,28 @@ public class Tile : MonoBehaviour
         }
         else Renderer.material = BaseMaterial;
     }
-    public Item CurrentBuildingOnTile()
+    public Item CurrentItemOnTile()
     {
-        if(IsTileEmpty) return null;
+        if(_itemOnTile == null) return null;
         else return _itemOnTile;
     }
-    public void AddBuildingToTile(Item building,GameObject buildingObj)
+    public Wall CurrentWallOnTile()
     {
-        _itemOnTile = building;
-        BuiltItemGameobjectOnTile = buildingObj;
+        if(_wallOnTile == null ) return null;
+        else return _wallOnTile;
+    }
+    public void AddItemToTile(Item item,GameObject itemObj)
+    {
+        if(item is Wall)
+        {
+            _wallOnTile = item as Wall;
+            BuiltWallGameobjectOnTile = itemObj;
+        }
+        else
+        {
+            _itemOnTile = item;
+            BuiltItemGameobjectOnTile = itemObj;
+        }
     }
     public void RemoveBuildingFromTile()
     {
@@ -59,5 +87,6 @@ public class Tile : MonoBehaviour
         BuiltItemGameobjectOnTile = null;
     }
     public Item ItemOnTile => _itemOnTile;
+    public Wall WallOnTile => _wallOnTile;
 
 }
