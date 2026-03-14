@@ -43,7 +43,7 @@ public class ItemTracker : MonoBehaviour
                 float lowestDistance = float.MaxValue;
                 foreach(Chair chair in Chairs)
                 {
-                    float distance = Vector3.Distance(chair.ChairObj.transform.position, position);
+                    float distance = Vector3.Distance(chair.BuiltItemObj.transform.position, position);
                     if(distance < lowestDistance)
                     {
                         lowestDistance = distance;

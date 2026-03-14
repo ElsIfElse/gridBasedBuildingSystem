@@ -113,7 +113,7 @@ public class ItemFactory : MonoBehaviour
         
         GameObject buildingObj = Instantiate(item.ItemPrefab);
         mainTile.AddItemToTile(item,buildingObj);
-        
+        item.SetBuiltItemObject(buildingObj);
         foreach(Tile tile in affectedTiles) tile.AddItemToTile(item,buildingObj);
 
         if(item is Wall) mainTile.BuiltWallGameobjectOnTile.transform.SetPositionAndRotation(mainTile.transform.position, ItemChooser.Instance.CurrentlyActivePreviewObj.transform.rotation);

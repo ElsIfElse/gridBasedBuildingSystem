@@ -15,6 +15,7 @@ public abstract class Item
 
     public GameObject ItemPrefab;
     public int CurrentRotation;
+    public GameObject BuiltItemObj;
 
     public virtual void InitializeFrom_Object(Item objectData)
     {
@@ -43,4 +44,6 @@ public abstract class Item
 
         ItemPrefab = soData.ItemPrefab;
     }
+
+    public void SetBuiltItemObject(GameObject obj) => BuiltItemObj = obj;
 }
